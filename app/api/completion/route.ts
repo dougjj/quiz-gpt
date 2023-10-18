@@ -4,7 +4,6 @@ import { NextRequest } from 'next/server'
 
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { appendStreams, stringToStream } from '@/utils/helpers'
 import { Database } from '@/types/supabase';
 import { parse_many_questions } from '@/utils/parsing';
 
@@ -61,38 +60,26 @@ Generate 3 questions about ${prompt} which are different from those above.`},
   
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
-    return stream
+    const [stream1, stream2] = stream.tee();
+    saveQuestions(prompt || "", stream2);
+    return stream1
 }
  
 export async function POST(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const prompt = searchParams.get('query') || "nothing"
-  const page = parseInt(searchParams.get('page') || "1")
-
-  console.log("prompt:", prompt)
 
   const supabase = createRouteHandlerClient<Database>({ cookies })
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
-  const questionStrings = questions.data?.map(q => [q.question, JSON.stringify(q.options), q.answer, q.explanation].join("\n")).join("\n\n");
-  const stream0 = stringToStream(questionStrings ? questionStrings + "\n\n" : "");
-
-  if ((questions.count || 0) >= 50) {
-    return new StreamingTextResponse(stream0); 
-  }
-
   const existing_questions = questions.data?.map(q => q.question).join("\n") || "";
 
   const stream = await getOpenAIResponse(prompt, existing_questions);
-  const [stream1, stream2] = stream.tee();
-  logStream(prompt || "", new StreamingTextResponse(stream2));
-  // Respond with the stream
-
-  const stream3 = appendStreams(stream0, stream1);
-  return new StreamingTextResponse(stream3);
+  return new StreamingTextResponse(stream);
 }
 
-async function logStream(topic: string, stream: StreamingTextResponse) {
-  const text = await stream.text();
+async function saveQuestions(topic: string, stream: ReadableStream) {
+  const streamingTextResponse = new StreamingTextResponse(stream)
+  const text = await streamingTextResponse.text();
   const questions = parse_many_questions(text);
   const questionsWithTopic = questions.map(question => ({ topic, ...question }));
 
