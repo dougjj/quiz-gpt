@@ -12,11 +12,23 @@ export default function NewQuestions({topic, page}: {topic: string, page: number
   
   // call api/completeion api on page load
   useEffect(() => {
-    complete("")
+    complete("");
+
+    console.log("complete called", topic);
+
+    console.time();
+    console.timeLog();
   }, [topic]);
+
+  // useEffect(() => {
+
+  // }, [completion]);
  
   return (
+    <>
+    <p>Client side</p>
     <Quiz completion={completion} isLoading={isLoading}
         topic={topic} page={page}/>
+    </>
   );
 }
