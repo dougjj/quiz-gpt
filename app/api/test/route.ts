@@ -2,9 +2,7 @@ import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { NextRequest } from 'next/server' 
 
-import { parse_many_questions } from '@/utils/parsing';
-
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 
 // Set the runtime to edge for best performance
 export const runtime = 'edge';
@@ -16,8 +14,6 @@ const openai = new OpenAI({
   
 
 async function getOpenAIResponse(prompt: string, existing_questions: string) {
-    console.log("prompt:", prompt)
-    console.log("existing_questions:", existing_questions)
     
     const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
@@ -62,12 +58,10 @@ Generate 3 questions about ${prompt} which are different from those above.`},
 }
  
 export async function GET(req: NextRequest) {
-    console.log("something")
   const searchParams = req.nextUrl.searchParams
   const prompt = searchParams.get('query') || "nothing"
   const existing_questions = "";
 
   const stream = await getOpenAIResponse(prompt, existing_questions);
-  console.log("Here 5")
   return new StreamingTextResponse(stream);
 }
