@@ -69,15 +69,20 @@ Generate 3 questions about ${prompt} which are different from those above.`},
 export async function POST(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const prompt = searchParams.get('query') || "nothing"
+  console.log("Here 1")
 
   // const supabase = createRouteHandlerClient<Database>({ cookies })
   const cookieStore = cookies()
+  console.log("Here 2")
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+  console.log("Here 3")
 
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
+  console.log("Here 4")
   const existing_questions = questions.data?.map(q => q.question).join("\n") || "";
 
   const stream = await getOpenAIResponse(prompt, existing_questions);
+  console.log("Here 5")
   return new StreamingTextResponse(stream);
 }
 
