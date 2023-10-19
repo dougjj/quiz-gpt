@@ -20,10 +20,6 @@ export default function NewQuestions({topic, page}: {topic: string, page: number
     console.timeLog();
   }, [topic]);
 
-  // useEffect(() => {
-
-  // }, [completion]);
- 
   return (
     <>
     <p>Client side</p>

@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { NextRequest } from 'next/server' 
 
+
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { Database } from '@/types/supabase';
@@ -61,7 +62,7 @@ Generate 3 questions about ${prompt} which are different from those above.`},
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
     const [stream1, stream2] = stream.tee();
-    saveQuestions(prompt || "", stream2);
+    saveQuestions(prompt, stream2);
     return stream1
 }
  
@@ -69,7 +70,10 @@ export async function POST(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const prompt = searchParams.get('query') || "nothing"
 
-  const supabase = createRouteHandlerClient<Database>({ cookies })
+  // const supabase = createRouteHandlerClient<Database>({ cookies })
+  const cookieStore = cookies()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
   const existing_questions = questions.data?.map(q => q.question).join("\n") || "";
 
@@ -83,7 +87,8 @@ async function saveQuestions(topic: string, stream: ReadableStream) {
   const questions = parse_many_questions(text);
   const questionsWithTopic = questions.map(question => ({ topic, ...question }));
 
-  const supabase = createRouteHandlerClient<Database>({ cookies })
+  const cookieStore = cookies()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
   await supabase.from('Question').insert(questionsWithTopic)
   console.log("Questions", questionsWithTopic);
