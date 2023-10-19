@@ -58,12 +58,11 @@ Generate 3 questions about ${prompt} which are different from those above.`},
   
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
-    const [stream1, stream2] = stream.tee();
-    saveQuestions(prompt, stream2);
-    return stream1
+    return stream
 }
  
 export async function GET(req: NextRequest) {
+    console.log("something")
   const searchParams = req.nextUrl.searchParams
   const prompt = searchParams.get('query') || "nothing"
   const existing_questions = "";
@@ -71,12 +70,4 @@ export async function GET(req: NextRequest) {
   const stream = await getOpenAIResponse(prompt, existing_questions);
   console.log("Here 5")
   return new StreamingTextResponse(stream);
-}
-
-async function saveQuestions(topic: string, stream: ReadableStream) {
-  const streamingTextResponse = new StreamingTextResponse(stream)
-  const text = await streamingTextResponse.text();
-  const questions = parse_many_questions(text);
-  const questionsWithTopic = questions.map(question => ({ topic, ...question }));
-  console.log("Questions", questionsWithTopic);
 }
