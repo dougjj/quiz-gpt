@@ -58,9 +58,9 @@ Generate 3 questions about ${prompt} which are different from those above.`},
   
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
-    const [stream1, stream2] = stream.tee();
-    saveQuestions(prompt, stream2);
-    return stream1
+    // const [stream1, stream2] = stream.tee();
+    // saveQuestions(prompt, stream2);
+    return stream
 }
  
 export async function GET(req: NextRequest) {
