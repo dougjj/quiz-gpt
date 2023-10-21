@@ -14,10 +14,7 @@ const openai = new OpenAI({
   
 
 async function getOpenAIResponse(prompt: string, existing_questions: string) {
-    let response = null;
-    try {
-       
-    response = await openai.chat.completions.create({
+    const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
         messages: [
             {
@@ -52,10 +49,7 @@ Generate 3 questions about ${prompt} which are different from those above.`},
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,    
-      }); 
-    } catch (error) {
-        console.log("Error: ", error);
-    }
+      });
   
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);

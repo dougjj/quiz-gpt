@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server' 
+import { NextResponse, NextRequest } from 'next/server' 
 
 
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
@@ -18,5 +18,5 @@ export async function GET(req: NextRequest) {
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
-  return Response.json({questions});
+  return NextResponse.json({questions});
 }
