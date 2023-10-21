@@ -58,9 +58,9 @@ Generate 3 questions about ${prompt} which are different from those above.`},
   
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
-    // const [stream1, stream2] = stream.tee();
-    // saveQuestions(prompt, stream2);
-    return stream
+    const [stream1, stream2] = stream.tee();
+    await saveQuestions(prompt, stream2);
+    return stream1
 }
  
 export async function GET(req: NextRequest) {
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
 
   // const supabase = createRouteHandlerClient<Database>({ cookies })
   const cookieStore = cookies()
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+  const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
   const existing_questions = questions.data?.map(q => q.question).join("\n") || "";
