@@ -18,5 +18,7 @@ export async function GET(req: NextRequest) {
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
+  console.log("questions")
+  console.log(questions)
   return NextResponse.json({questions});
 }
