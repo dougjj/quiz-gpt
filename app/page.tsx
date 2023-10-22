@@ -1,7 +1,10 @@
 import { Typography } from "@mui/joy"
-
-export const dynamic = 'force-dynamic'
+import Search from '@/components/search'
 
 export default async function Index() {
-  return <Typography>Quizomatic!</Typography>
+  return (
+    <>
+    <Typography>Quizomatic!</Typography>
+    </>
+  )
 }

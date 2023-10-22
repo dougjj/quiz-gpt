@@ -2,7 +2,6 @@ import Quiz from '@/components/quiz';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { Database } from '@/types/supabase';
-import { parse_many_questions } from '@/utils/parsing';
 
 import NewQuestions from './new_questions';
 
@@ -32,8 +31,6 @@ export default async function Page({
     const questions = await supabase.from('Question').select()
         .filter('topic', 'eq', topic)
         .range(from, to);
-
-    console.log("length", questions.data?.length)
 
     if (questions.data?.length == 0) {
         return <NewQuestions topic={topic} page={page} />
