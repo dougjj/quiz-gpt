@@ -3,7 +3,9 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { Database } from '@/types/supabase';
 
-import NewQuestions from './new_questions';
+import NewQuestions from '@/components/new_questions';
+import { Stack } from '@mui/joy';
+import Search from '@/components/search';
 
 
 export default async function Page({
@@ -13,7 +15,7 @@ export default async function Page({
   }) {
     const topic = searchParams.q as string;
 
-    let page: number;  // Declare page outside of the if-else scope
+    let page: number;
 
     if (searchParams.page === undefined) {
         page = 1;
@@ -33,11 +35,23 @@ export default async function Page({
         .range(from, to);
 
     if (questions.data?.length == 0) {
-        return <NewQuestions topic={topic} page={page} />
+        return (
+            <Stack spacing={2}>
+                <Search />
+                <NewQuestions topic={topic} page={page}/>
+            </Stack>
+            )
     }
 
     const questionStrings = questions.data?.map(q => [q.question, JSON.stringify(q.options), q.answer, q.explanation].join("\n")).join("\n\n");
 
-    return <Quiz completion={questionStrings || ""} isLoading={false}
-                topic={topic} page={page}/>
+    return (
+    <Stack spacing={2}>
+        <Search />
+        <Quiz completion={questionStrings || ""} 
+            isLoading={false}
+            topic={topic}
+            page={page}/>
+    </Stack>
+    )
   }

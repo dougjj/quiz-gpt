@@ -149,7 +149,7 @@ export default function Quiz({completion, isLoading, topic, page}: QuizProps) {
         <Card>
             <Typography level="h2">Final score: {correct}/{num_loaded}</Typography>
             <Button component="a" href={next_url}>
-              Open in new tab
+              Generate more questions!
             </Button>
         </Card>}
     </Stack>

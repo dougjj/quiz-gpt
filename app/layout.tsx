@@ -1,5 +1,4 @@
 import './globals.css'
-import Search from '@/components/search'
 
 export const metadata = {
   title: 'Quizomatic',
@@ -14,10 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div>
-          <Search />
-        </div>
-        <main className="min-h-screen bg-background flex flex-col items-center">
+        <main className="min-h-screen bg-background flex flex-col items-center mx-auto w-full max-w-lg py-24">
           {children}
         </main>
       </body>

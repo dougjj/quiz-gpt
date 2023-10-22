@@ -60,7 +60,6 @@ Generate 3 questions about ${prompt} which are different from those above.`},
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response, {
       async onCompletion(completion) {
-        // Cache the response. Note that this will also cache function calls.
         console.log("completion:", completion);
         await saveQuestions(prompt, completion);
       },

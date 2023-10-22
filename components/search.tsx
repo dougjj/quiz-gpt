@@ -16,7 +16,7 @@ export default function Search() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-max-[550px] relative w-full lg:w-80 xl:w-full">
+    <form onSubmit={onSubmit}>
       <Input
         name="topic"
         placeholder="Get quizzed on anything"
