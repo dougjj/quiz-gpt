@@ -3,7 +3,7 @@ import Search from '@/components/search'
 
 export default async function Index() {
   return (
-    <Stack>
+    <Stack spacing={2}>
     <Typography level="h1" className="title">Quizomatic!</Typography>
     <Typography>
       Quizomatic uses ChatGPT to generate questions and answers on any topic.

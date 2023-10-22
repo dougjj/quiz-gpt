@@ -47,7 +47,7 @@ The Nile is a major river in northeastern Africa and flows through Egypt, provid
 Do not include any of the following questions:
 ${existing_questions}
 
-Generate 3 questions about ${prompt} which are different from those above.`},
+Generate 10 questions about ${prompt} which are different from those above.`},
           ],
         stream: true,
         temperature: 1,
