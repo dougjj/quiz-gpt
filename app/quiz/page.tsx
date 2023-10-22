@@ -36,7 +36,6 @@ export default async function Page({
     console.log("length", questions.data?.length)
 
     if (questions.data?.length == 0) {
-        console.log("Here!!!")
         return <NewQuestions topic={topic} page={page} />
     }
 

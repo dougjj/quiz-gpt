@@ -9,14 +9,12 @@ import { Database } from '@/types/supabase';
 import { parse_many_questions } from '@/utils/parsing';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
- 
-// Set the runtime to edge for best performance
-export const runtime = 'edge';
 
 async function getOpenAIResponse(prompt: string, existing_questions: string) {
     console.log("prompt:", prompt)
@@ -60,41 +58,39 @@ Generate 3 questions about ${prompt} which are different from those above.`},
       });
   
     // Convert the response into a friendly text-stream
-    const stream = OpenAIStream(response);
-    const [stream1, stream2] = stream.tee();
-    saveQuestions(prompt, stream2);
-    return stream1
+    const stream = OpenAIStream(response, {
+      async onCompletion(completion) {
+        // Cache the response. Note that this will also cache function calls.
+        console.log("completion:", completion);
+        await saveQuestions(prompt, completion);
+      },
+    });
+
+    return stream
 }
  
 export async function POST(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const prompt = searchParams.get('query') || "nothing"
-  console.log("Here 1")
 
-  // const supabase = createRouteHandlerClient<Database>({ cookies })
   const cookieStore = cookies()
-  console.log("Here 2")
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
-  console.log("Here 3")
+  const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
-  console.log("Here 4")
   const existing_questions = questions.data?.map(q => q.question).join("\n") || "";
 
   const stream = await getOpenAIResponse(prompt, existing_questions);
-  console.log("Here 5")
   return new StreamingTextResponse(stream);
 }
 
-async function saveQuestions(topic: string, stream: ReadableStream) {
-  const streamingTextResponse = new StreamingTextResponse(stream)
-  const text = await streamingTextResponse.text();
-  const questions = parse_many_questions(text);
+async function saveQuestions(topic: string, completion: string) {
+  const questions = parse_many_questions(completion);
   const questionsWithTopic = questions.map(question => ({ topic, ...question }));
 
   const cookieStore = cookies()
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+  const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
-  await supabase.from('Question').insert(questionsWithTopic)
   console.log("Questions", questionsWithTopic);
+  
+  const {error} = await supabase.from('Question').insert(questionsWithTopic)
 }
