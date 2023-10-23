@@ -1,4 +1,5 @@
 import './globals.css'
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: 'Quizomatic',
@@ -15,6 +16,7 @@ export default function RootLayout({
       <body>
         <main className="min-h-screen bg-background flex flex-col items-center mx-auto w-full max-w-lg py-24">
           {children}
+          <Analytics />
         </main>
       </body>
     </html>

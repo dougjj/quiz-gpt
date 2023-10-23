@@ -38,7 +38,7 @@ export default async function Page({
         return (
             <Stack spacing={2}>
                 <Search />
-                <NewQuestions topic={topic} page={page}/>
+                <NewQuestions key={topic} topic={topic} page={page}/>
             </Stack>
             )
     }
