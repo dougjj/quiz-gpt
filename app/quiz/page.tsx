@@ -4,8 +4,9 @@ import { cookies } from 'next/headers'
 import { Database } from '@/types/supabase';
 
 import NewQuestions from '@/components/new_questions';
-import { Stack } from '@mui/joy';
+import { Stack, Typography } from '@mui/joy';
 import Search from '@/components/search';
+import Link from 'next/link';
 
 
 export default async function Page({
@@ -37,6 +38,9 @@ export default async function Page({
     if (questions.data?.length == 0) {
         return (
             <Stack spacing={2}>
+                <Link href={"/"}>
+                    <Typography level="h4">Quizomatic</Typography>
+                </Link>
                 <Search />
                 <NewQuestions key={topic} topic={topic} page={page}/>
             </Stack>
@@ -47,6 +51,9 @@ export default async function Page({
 
     return (
     <Stack spacing={2}>
+        <Link href={"/"}>
+            <Typography level="h4">Quizomatic</Typography>
+        </Link>
         <Search />
         <Quiz completion={questionStrings || ""} 
             isLoading={false}
