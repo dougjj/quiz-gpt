@@ -138,7 +138,7 @@ export default function Quiz({completion, isLoading, topic, page}: QuizProps) {
   const question_list = parse_completion(completion, incrementAnswered, incrementCorrect);
   const num_loaded = question_list.length;
   const is_finished = !isLoading && (num_loaded === answered) && (answered > 0);
-  const next_url = `/quiz?q=${topic}&page=${page + 1}`
+  const next_url = `/quiz/${topic}/${page + 1}`
  
   return (
     <Stack spacing={4}>
