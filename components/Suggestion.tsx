@@ -14,7 +14,7 @@ export default function Suggestion() {
                 width={500} height={500}/>
             </CardCover>
             <CardContent>
-                <Link href="quiz/?q=shakespeare">
+                <Link href="quiz/shakespeare/1">
                     <Typography>
                         Shakespeare
                     </Typography>
