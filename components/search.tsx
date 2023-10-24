@@ -11,7 +11,7 @@ export default function Search() {
     const formData = new FormData(e.target as HTMLFormElement);
     const topic = formData.get("topic");
     if (topic != null && topic != "") {
-      router.push(`/quiz?q=${topic}`);
+      router.push(`/quiz/${topic}/1`);
     }
   }
 
