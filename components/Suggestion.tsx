@@ -27,6 +27,9 @@ const suggestionData: SuggestionProps[] = [
 export function Suggestions() {
     return (
         <Stack spacing={2}>
+            <Typography level="h2">
+                Explore
+            </Typography>
             {suggestionData.map((value, i) =>
                 <Suggestion key={i} topic={value.topic} imageSrc={value.imageSrc} />
             )}
