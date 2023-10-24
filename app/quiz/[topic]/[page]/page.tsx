@@ -1,8 +1,4 @@
 import Quiz from '@/components/quiz';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { Database } from '@/types/supabase';
-
 import NewQuestions from '@/components/new_questions';
 import Search from '@/components/search';
 import Link from 'next/link';
@@ -11,6 +7,8 @@ import Stack from '@mui/joy/Stack';
 import Typography from '@mui/joy/Typography';
 import Button from '@mui/joy/Button';
 import ButtonGroup from '@mui/joy/ButtonGroup';
+
+import supabase from '@/utils/supabase';
 
 
 // export const dynamic = 'force-dynamic';
@@ -25,8 +23,6 @@ export default async function Page({ params }: { params: { topic: string, page: 
     const to = page * 10 - 1;
 
     console.time("supabase")
-    
-    const supabase = createRouteHandlerClient<Database>({ cookies })
     const [questions, count] = await Promise.all([supabase.from('Question').select()
         .filter('topic', 'eq', topic)
         .range(from, to),
@@ -97,7 +93,7 @@ function PageSelectorButton({ topic, page } : { topic: string, page: number}) {
 };
 
 export async function generateStaticParams() {  
-    return ["shakespeare"].map((topic) => ({
+    return ["shakespeare", "sweden", "art"].map((topic) => ({
       topic: topic,
       page: "1",
     }))
