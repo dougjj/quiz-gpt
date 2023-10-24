@@ -14,7 +14,7 @@ import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
 import Card from '@mui/joy/Card';
 import CircularProgress from '@mui/joy/CircularProgress';
-
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 interface AnswerButtonProps {
     text: string,
@@ -74,7 +74,7 @@ export function Question({question, options, correct_answer, explanation, onAnsw
   return (
     <Card>
     <Stack spacing={1}>
-        <Typography level="h3">
+        <Typography level="h4">
             {question}
         </Typography>
         <ButtonGroup spacing="0.5rem" 
@@ -84,8 +84,8 @@ export function Question({question, options, correct_answer, explanation, onAnsw
             {answerButtons}
         </ButtonGroup>
         <>
-        {reveal && correct && <Typography level="h4">😎 Nice Job!</Typography>}
-        {reveal && !correct && <Typography level="h4">🙈 Uh oh!</Typography>}
+        {reveal && correct && <Typography color='success' level="title-lg"> <CheckCircleIcon /> Nice Job!</Typography>}
+        {reveal && !correct && <Typography color='danger' level="title-lg">🙈 Uh oh!</Typography>}
         {reveal &&
         <Typography level="body-lg">
             {explanation}
