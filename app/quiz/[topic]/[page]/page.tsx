@@ -8,8 +8,10 @@ import { Stack, Typography } from '@mui/joy';
 import Search from '@/components/search';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page({ params }: { params: { topic: string, page: number } }) {
-    const topic = params.topic;
+    const topic = decodeURIComponent(params.topic);
     let page = Number(params?.page) || 1;
     page = Math.max(1, page);
     page = Math.min(10, page);
@@ -22,9 +24,13 @@ export default async function Page({ params }: { params: { topic: string, page: 
         .filter('topic', 'eq', topic)
         .range(from, to);
 
+    console.log("topic, page: ", topic, page)
+    console.log("page q length: ", questions.data?.length)
+
     if (questions.data?.length == 0) {
         return (
             <QuizPage>
+                Client side generation
                 <NewQuestions key={topic} topic={topic} page={page}/>
             </QuizPage>
         )
