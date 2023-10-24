@@ -18,7 +18,7 @@ const openai = new OpenAI({
 
 async function getOpenAIResponse(prompt: string, existing_questions: string) {
     console.log("prompt:", prompt)
-    console.log("existing_questions:", existing_questions)
+    // console.log("existing_questions:", existing_questions)
     
     const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
