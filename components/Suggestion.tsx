@@ -21,19 +21,28 @@ const suggestionData: SuggestionProps[] = [
     }, {
         topic: "Sweden",
         imageSrc: "/sweden.png",
-    }
+    }, {
+        topic: "Art",
+        imageSrc: "/monalisa.jpg",
+    },
 ]
 
 export function Suggestions() {
     return (
-        <Stack spacing={2}>
-            <Typography level="h2">
+        <>
+        <Typography level="h2" gutterBottom>
                 Explore
-            </Typography>
+        </Typography>
+        <Grid container
+            justifyContent="center"
+            >
             {suggestionData.map((value, i) =>
-                <Suggestion key={i} topic={value.topic} imageSrc={value.imageSrc} />
+                <Grid key={i} sx={{ my: 1, mx: 1}}>
+                    <Suggestion key={i} topic={value.topic} imageSrc={value.imageSrc} />
+                </Grid>
             )}
-        </Stack>
+        </Grid>
+        </>
     )
 }
 
@@ -48,12 +57,11 @@ export function Suggestion({ topic, imageSrc } : SuggestionProps) {
         <Card sx={{ width: 200, height: 160 }} >
             <CardCover>
                 <Image src={imageSrc} alt={topic} 
-                width={500} height={500}/>
+                width={200} height={160}/>
             </CardCover>
             <CardContent>
                 <Typography
-                    level="body-lg"
-                    fontWeight="lg"
+                    level="h4"
                     textColor="#fff">
                     <Link href={`/quiz/${t}/1`} component={NextLink}  overlay
                         underline="none"

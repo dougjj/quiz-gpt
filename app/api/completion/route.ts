@@ -1,11 +1,8 @@
 import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { NextRequest } from 'next/server' 
+import { NextRequest } from 'next/server'
 
-
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { Database } from '@/types/supabase';
+import supabase from '@/utils/supabase';
 import { parse_many_questions } from '@/utils/parsing';
 
 export const dynamic = 'force-dynamic';
@@ -50,11 +47,7 @@ ${existing_questions}
 Generate 10 questions about ${prompt} which are different from those above.`},
           ],
         stream: true,
-        temperature: 1,
         max_tokens: 10_000,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,    
       });
   
     // Convert the response into a friendly text-stream
@@ -72,9 +65,6 @@ export async function POST(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const prompt = searchParams.get('query') || "nothing"
 
-  const cookieStore = cookies()
-  const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
-
   const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
   const existing_questions = questions.data?.map(q => q.question).join("\n") || "";
 
@@ -85,9 +75,6 @@ export async function POST(req: NextRequest) {
 async function saveQuestions(topic: string, completion: string) {
   const questions = parse_many_questions(completion);
   const questionsWithTopic = questions.map(question => ({ topic, ...question }));
-
-  const cookieStore = cookies()
-  const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
   console.log("Questions", questionsWithTopic);
   

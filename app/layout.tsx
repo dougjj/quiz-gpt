@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <main className="min-h-screen bg-background flex flex-col items-center mx-auto w-full max-w-lg py-24">
+        <main className="bg-background flex flex-col items-center mx-auto w-full max-w-lg px-4 py-8">
           {children}
           <Analytics />
         </main>

@@ -9,9 +9,9 @@ import Button from '@mui/joy/Button';
 import ButtonGroup from '@mui/joy/ButtonGroup';
 
 import supabase from '@/utils/supabase';
+import { revalidatePath } from 'next/cache';
 
-
-// export const dynamic = 'force-dynamic';
+// export const revalidate = 0
 
 export default async function Page({ params }: { params: { topic: string, page: number } }) {
     const topic = decodeURIComponent(params.topic);
@@ -36,6 +36,7 @@ export default async function Page({ params }: { params: { topic: string, page: 
     console.log("page q length: ", questions.data?.length)
 
     if (questions.data?.length == 0) {
+        revalidatePath(`/quiz/${topic}/${page}`);
         return (
             <QuizPage topic={topic} numPages={numPages}>
                 <NewQuestions key={topic} topic={topic} page={page}/>
@@ -57,7 +58,7 @@ export default async function Page({ params }: { params: { topic: string, page: 
 
 function QuizPage({ topic, numPages, children } : { topic: string, numPages: number, children: React.ReactNode }) {
     return (
-        <Stack spacing={numPages}>
+        <Stack spacing={2}>
             <Link href={"/"}>
                 <Typography level="h4">Quizomatic</Typography>
             </Link>
@@ -71,12 +72,17 @@ function QuizPage({ topic, numPages, children } : { topic: string, numPages: num
 function PageSelector({ topic, numPages } : { topic: string, numPages: number}) {
     const nPages = Math.min(10, numPages);
     return (
-        <ButtonGroup spacing={1}>
-            {Array.from(Array(nPages).keys()).map((i) =>(
-                <PageSelectorButton key={i} topic={topic} page={i+1}/>
-            )
-            )}
+        <ButtonGroup spacing={2}
+            color='primary'>
+            <Button>Prev</Button>
+            <Button>Next</Button>
         </ButtonGroup>
+        // <ButtonGroup spacing={1}>
+        //     {Array.from(Array(nPages).keys()).map((i) =>(
+        //         <PageSelectorButton key={i} topic={topic} page={i+1}/>
+        //     )
+        //     )}
+        // </ButtonGroup>
     )
 };
 
@@ -91,10 +97,3 @@ function PageSelectorButton({ topic, page } : { topic: string, page: number}) {
         </Button>
     )
 };
-
-export async function generateStaticParams() {  
-    return ["shakespeare", "sweden", "art"].map((topic) => ({
-      topic: topic,
-      page: "1",
-    }))
-  }

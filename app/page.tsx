@@ -1,16 +1,25 @@
-import { Stack, Typography } from "@mui/joy"
+import { Stack, Typography, Container, Box, Input} from "@mui/joy"
 import Search from '@/components/search'
 import { Suggestions } from "@/components/Suggestion"
 
 export default async function Index() {
   return (
-    <Stack spacing={2}>
-      <Typography level="h1" className="title">Quizomatic!</Typography>
-      <Typography>
-        Quizomatic uses ChatGPT to generate questions and answers on any topic.
-      </Typography>
+    <Container>
+    <Box>
+        <Typography level="h1" gutterBottom>
+            Quizomatic
+        </Typography>
+        <Typography>
+          Quizomatic uses ChatGPT to generate questions and answers on any topic.
+        </Typography>
+    </Box>
+
+    <Box sx={{ my: 3 }}>
       <Search />
+    </Box>
+    <Box sx={{ my: 3 }}>
       <Suggestions />
-    </Stack>
+    </Box>
+    </Container>
   )
 }
