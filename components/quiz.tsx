@@ -150,7 +150,7 @@ export default function Quiz({completion, isLoading, topic, page}: QuizProps) {
  
   return (
     <Stack spacing={4}>
-        {question_list.map((question, i) =>
+      {question_list.map((question, i) =>
         <Question key={i} {...question} />)}
         {isLoading && <CircularProgress variant="outlined"/>}
         {is_finished && 

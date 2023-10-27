@@ -11,12 +11,14 @@ export async function getCachedQuestions(topic: string, page: number) {
     const to = page * QUESTIONS_PER_PAGE - 1;
   
     console.time("supabase")
-    const questions = supabase.from('Question').select()
+    const questions = await supabase.from('Question').select()
         .filter('topic', 'eq', topic)
         .range(from, to);
     console.timeEnd("supabase")
 
-    return questions;
+    const isFullPage = questions.data?.length === QUESTIONS_PER_PAGE;
+
+    return { questions, isFullPage };
   }
   
 export async function saveQuestions(topic: string, completion: string) {

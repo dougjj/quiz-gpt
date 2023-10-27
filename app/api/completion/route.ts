@@ -66,14 +66,14 @@ export async function POST(req: NextRequest) {
   const { topic, page } = await req.json();
   console.log("page", page, topic)
 
-  const cachedQuestions = await getCachedQuestions(topic, page);
-  if (cachedQuestions.data?.length) {
-    const questionsString = cachedQuestions.data?.map(q => [q.question, JSON.stringify(q.options), q.answer, q.explanation].join("\n")).join("\n\n");
+  const { questions, isFullPage } = await getCachedQuestions(topic, page);
+  if (isFullPage) {
+    const questionsString = questions.data?.map(q => [q.question, JSON.stringify(q.options), q.answer, q.explanation].join("\n")).join("\n\n");
     return new Response(questionsString)
   }
 
-  const questions = await supabase.from('Question').select('question').filter('topic', 'eq', topic);
-  const existingQuestions = questions.data?.join("\n") || "";
+  const questionsText = await supabase.from('Question').select('question').filter('topic', 'eq', topic);
+  const existingQuestions = questionsText.data?.join("\n") || "";
 
   revalidatePath(`/quiz/${topic}/${page}`);
   

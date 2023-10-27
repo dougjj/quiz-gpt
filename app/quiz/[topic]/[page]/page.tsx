@@ -13,12 +13,12 @@ import { revalidatePath } from 'next/cache';
 export default async function Page({ params }: { params: { topic: string, page: number } }) {
     const topic = decodeURIComponent(params.topic);
     let page = Number(params?.page) || 1;
-    const questions = await getCachedQuestions(topic, page);
+    const { questions, isFullPage } = await getCachedQuestions(topic, page);
 
     console.log("topic, page: ", topic, page)
     console.log("page q length: ", questions.data?.length)
 
-    if (questions.data?.length == 0) {
+    if (!isFullPage) {
         revalidatePath(`/quiz/${topic}/${page}`);
         return (
             <QuizPage topic={topic} page={page} nextDisabled={true}>
