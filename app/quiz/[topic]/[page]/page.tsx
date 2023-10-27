@@ -41,7 +41,13 @@ export default async function Page({ params }: { params: { topic: string, page: 
 
 function QuizPage({ topic, page, nextDisabled, children } : { topic: string, page: number, nextDisabled: boolean, children: React.ReactNode }) {
     return (
-        <Stack spacing={2}>
+        <Stack
+            direction="column"
+            justifyContent="center"
+            alignItems="stretch"
+            spacing={2}
+            sx={{ width: '100%', mx: 'auto' }}
+        >
             <Link href={"/"}>
                 <Typography level="h4">Quizomatic</Typography>
             </Link>

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Input from '@mui/joy/Input';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 export default function Search() {
   const router = useRouter();
@@ -21,6 +22,8 @@ export default function Search() {
         name="topic"
         placeholder="Get quizzed on anything"
         defaultValue={''}
+        fullWidth
+        endDecorator={<SearchRoundedIcon />}
       />
     </form>
   );
