@@ -5,32 +5,15 @@ import Link from 'next/link';
 
 import Stack from '@mui/joy/Stack';
 import Typography from '@mui/joy/Typography';
-import Button from '@mui/joy/Button';
-import ButtonGroup from '@mui/joy/ButtonGroup';
 
-import supabase from '@/utils/supabase';
+import { PrevNext } from '@/components/nav';
+import { getCachedQuestions } from '@/utils/data';
 import { revalidatePath } from 'next/cache';
-
-// export const revalidate = 0
 
 export default async function Page({ params }: { params: { topic: string, page: number } }) {
     const topic = decodeURIComponent(params.topic);
     let page = Number(params?.page) || 1;
-    page = Math.max(1, page);
-    page = Math.min(10, page);
-    
-    const from = (page - 1) * 10;
-    const to = page * 10 - 1;
-
-    console.time("supabase")
-    const [questions, count] = await Promise.all([supabase.from('Question').select()
-        .filter('topic', 'eq', topic)
-        .range(from, to),
-        supabase.from('Question').select('id', {count : 'exact'})
-        .filter('topic', 'eq', topic),])
-    console.timeEnd("supabase")
-
-    const numPages = Math.ceil((count.count || 0) /10);
+    const questions = await getCachedQuestions(topic, page);
 
     console.log("topic, page: ", topic, page)
     console.log("page q length: ", questions.data?.length)
@@ -38,7 +21,7 @@ export default async function Page({ params }: { params: { topic: string, page: 
     if (questions.data?.length == 0) {
         revalidatePath(`/quiz/${topic}/${page}`);
         return (
-            <QuizPage topic={topic} numPages={numPages}>
+            <QuizPage topic={topic} page={page} nextDisabled={true}>
                 <NewQuestions key={topic} topic={topic} page={page}/>
             </QuizPage>
         )
@@ -47,7 +30,7 @@ export default async function Page({ params }: { params: { topic: string, page: 
     const questionsString = questions.data?.map(q => [q.question, JSON.stringify(q.options), q.answer, q.explanation].join("\n")).join("\n\n");
 
     return (
-        <QuizPage topic={topic} numPages={numPages}>
+        <QuizPage topic={topic} page={page} nextDisabled={false}>
             <Quiz completion={questionsString || ""} 
                 isLoading={false}
                 topic={topic}
@@ -56,7 +39,7 @@ export default async function Page({ params }: { params: { topic: string, page: 
     )
   }
 
-function QuizPage({ topic, numPages, children } : { topic: string, numPages: number, children: React.ReactNode }) {
+function QuizPage({ topic, page, nextDisabled, children } : { topic: string, page: number, nextDisabled: boolean, children: React.ReactNode }) {
     return (
         <Stack spacing={2}>
             <Link href={"/"}>
@@ -64,36 +47,7 @@ function QuizPage({ topic, numPages, children } : { topic: string, numPages: num
             </Link>
             <Search />
             {children}
-            <PageSelector topic={topic} numPages={numPages} />
+            <PrevNext topic={topic} page={page} nextDisabled={nextDisabled} />
         </Stack>
-    )
-};
-
-function PageSelector({ topic, numPages } : { topic: string, numPages: number}) {
-    const nPages = Math.min(10, numPages);
-    return (
-        <ButtonGroup spacing={2}
-            color='primary'>
-            <Button>Prev</Button>
-            <Button>Next</Button>
-        </ButtonGroup>
-        // <ButtonGroup spacing={1}>
-        //     {Array.from(Array(nPages).keys()).map((i) =>(
-        //         <PageSelectorButton key={i} topic={topic} page={i+1}/>
-        //     )
-        //     )}
-        // </ButtonGroup>
-    )
-};
-
-function PageSelectorButton({ topic, page } : { topic: string, page: number}) {
-    return (
-        <Button 
-            component={Link}
-            href={`/quiz/${topic}/${page}`}>
-            <Typography level="body-sm">
-                {page}    
-            </Typography>
-        </Button>
     )
 };

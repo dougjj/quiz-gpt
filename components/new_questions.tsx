@@ -7,7 +7,8 @@ import { useEffect } from 'react';
 export default function NewQuestions({topic, page}: {topic: string, page: number}) {
 
   const { completion, complete, isLoading } = useCompletion(
-    {api: `/api/completion?query=${topic}`}
+    {api: '/api/completion',
+     body: {'topic': topic, 'page': page}}
   );
   
   // call api/completeion api on page load

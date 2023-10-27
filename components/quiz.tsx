@@ -1,13 +1,6 @@
 'use client'
 
-// TODO Prevent click between buttons
-// TODO Show correct answer
-// TODO Say if right or wrong
-// TODO Tone
-// TODO Keep colours, no grey out
-
 import { useState } from 'react';
-import * as React from 'react';
 import Button from '@mui/joy/Button';
 import ButtonGroup from '@mui/joy/ButtonGroup';
 import Typography from '@mui/joy/Typography';
@@ -16,6 +9,7 @@ import Card from '@mui/joy/Card';
 import CircularProgress from '@mui/joy/CircularProgress';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import Link from 'next/link';
 
 interface AnswerButtonProps {
     text: string,
@@ -37,7 +31,7 @@ function AnswerButton({text, reveal, is_correct, onClick}: AnswerButtonProps) {
             }
         ]}
         disabled={reveal}>
-            {text}
+          {text}
         </Button>)
 };
 
@@ -50,9 +44,21 @@ interface QuestionProps {
     onCorrect: () => void,
 }
 
+function shuffle(array: number[]): number[] {
+  for (let i = array.length - 1; i > 0; i--) {
+      // Pick a random index from 0 to i
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+
+      // Swap elements array[i] and array[randomIndex]
+      [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
+  }
+  return array;
+}
+
 export function Question({question, options, correct_answer, explanation, onAnswer, onCorrect}: QuestionProps) {
   const [reveal, setReveal] = useState(false);
   const [correct, setCorrect] = useState(false);
+  const [permutation] = useState(shuffle([0, 1, 2, 3]));
 
   function onClick(is_correct: boolean) {
     setReveal(true);
@@ -63,14 +69,15 @@ export function Question({question, options, correct_answer, explanation, onAnsw
     }
   };
 
-  const answerButtons = options.map((value, i) =>
-    <AnswerButton 
+  const answerButtons = options.map((_, i) => {
+    const option = options[permutation[i]];
+    return <AnswerButton 
         key={i} 
-        text={value}
+        text={option}
         reveal={reveal} 
-        is_correct={value === correct_answer}
-        onClick={() => onClick(value === correct_answer)}
-    />);
+        is_correct={option === correct_answer}
+        onClick={() => onClick(option === correct_answer)}
+    />});
 
   return (
     <Card>
@@ -149,8 +156,8 @@ export default function Quiz({completion, isLoading, topic, page}: QuizProps) {
         {is_finished && 
         <Card>
             <Typography level="h2">Final score: {correct}/{num_loaded}</Typography>
-            <Button component="a" href={next_url}>
-              Generate more questions!
+            <Button component={Link} href={next_url}>
+              More questions!
             </Button>
         </Card>}
     </Stack>

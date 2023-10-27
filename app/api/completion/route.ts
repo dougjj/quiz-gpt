@@ -3,7 +3,8 @@ import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { NextRequest } from 'next/server'
 
 import supabase from '@/utils/supabase';
-import { parse_many_questions } from '@/utils/parsing';
+import { getCachedQuestions, saveQuestions, QUESTIONS_PER_PAGE } from '@/utils/data';
+import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'edge';
@@ -13,9 +14,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function getOpenAIResponse(prompt: string, existing_questions: string) {
+async function getOpenAIResponse(prompt: string, existingQuestions: string) {
     console.log("prompt:", prompt)
-    // console.log("existing_questions:", existing_questions)
     
     const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
@@ -42,9 +42,9 @@ The Nile is a major river in northeastern Africa and flows through Egypt, provid
 
 
 Do not include any of the following questions:
-${existing_questions}
+${existingQuestions}
 
-Generate 10 questions about ${prompt} which are different from those above.`},
+Generate ${QUESTIONS_PER_PAGE} questions about ${prompt} which are different from those above.`},
           ],
         stream: true,
         max_tokens: 10_000,
@@ -60,23 +60,23 @@ Generate 10 questions about ${prompt} which are different from those above.`},
 
     return stream
 }
+
  
 export async function POST(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams
-  const prompt = searchParams.get('query') || "nothing"
+  const { topic, page } = await req.json();
+  console.log("page", page, topic)
 
-  const questions = await supabase.from('Question').select().filter('topic', 'eq', prompt);
-  const existing_questions = questions.data?.map(q => q.question).join("\n") || "";
+  const cachedQuestions = await getCachedQuestions(topic, page);
+  if (cachedQuestions.data?.length) {
+    const questionsString = cachedQuestions.data?.map(q => [q.question, JSON.stringify(q.options), q.answer, q.explanation].join("\n")).join("\n\n");
+    return new Response(questionsString)
+  }
 
-  const stream = await getOpenAIResponse(prompt, existing_questions);
-  return new StreamingTextResponse(stream);
-}
+  const questions = await supabase.from('Question').select('question').filter('topic', 'eq', topic);
+  const existingQuestions = questions.data?.join("\n") || "";
 
-async function saveQuestions(topic: string, completion: string) {
-  const questions = parse_many_questions(completion);
-  const questionsWithTopic = questions.map(question => ({ topic, ...question }));
-
-  console.log("Questions", questionsWithTopic);
+  revalidatePath(`/quiz/${topic}/${page}`);
   
-  const {error} = await supabase.from('Question').insert(questionsWithTopic)
+  const stream = await getOpenAIResponse(topic, existingQuestions);
+  return new StreamingTextResponse(stream);
 }
