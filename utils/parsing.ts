@@ -1,4 +1,4 @@
-export function parse_question(question: string) {
+function parseQuestion(question: string) {
     const [question_text, options, correct_answer, explanation] = question.split("\n");
     if (explanation === undefined) {
         throw new Error(`Invalid question: question=${question}}`);
@@ -11,10 +11,10 @@ export function parse_question(question: string) {
   }
 }    
 
-export function parse_many_questions(completion: string) {
+export function parseQuestions(completion: string) {
   const question_list = completion.split("\n\n").map((question) => {
     try {
-      return parse_question(question);
+      return parseQuestion(question);
     } catch (error) {
       console.log(error);
       return null
