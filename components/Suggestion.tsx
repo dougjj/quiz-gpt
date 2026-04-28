@@ -1,3 +1,5 @@
+'use client';
+
 import Typography from '@mui/joy/Typography';
 import Card from '@mui/joy/Card';
 import { CardContent, CardCover, Grid, Stack } from '@mui/joy';
