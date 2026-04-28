@@ -51,7 +51,7 @@ Generate ${QUESTIONS_PER_PAGE} questions about ${prompt} which are different fro
       });
   
     // Convert the response into a friendly text-stream
-    const stream = OpenAIStream(response, {
+    const stream = OpenAIStream(response as any, {
       async onCompletion(completion) {
         console.log("completion:", completion);
         await saveQuestions(prompt, completion);
